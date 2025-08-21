@@ -33,11 +33,12 @@ const Footer = () => {
                         alt="Logo"
                         width={120}
                         height={40}
+                        priority
                     />
                     <p className="flex items-center h-30">
-                        Phúc Lộc Sim
-                        <br />
-                        Bản quyền &copy; {new Date().getFullYear()} thuộc về duco9t.pro.vn - Tất cả quyền được bảo lưu.
+                        Phúc Lộc Sim - Bản quyền &copy; {new Date().getFullYear()} thuộc về
+                        <a href="https://duco9t.pro.vn" className="ml-1 text-blue-500">Duco</a>
+                        - Tất cả quyền được bảo lưu.
                     </p>
                 </aside>
 

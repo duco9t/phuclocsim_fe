@@ -10,7 +10,7 @@ const Header = () => {
     const [open, setOpen] = useState(false);
 
     return (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-base-100 shadow-md">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-base-100/90 shadow-md">
             <div className="flex items-center justify-between px-4 py-3 lg:px-8">
                 {/* Left: Hamburger (mobile) */}
                 <div className="lg:hidden">
@@ -29,6 +29,7 @@ const Header = () => {
                         alt="Logo"
                         width={250}
                         height={60}
+                        priority
                     />
                 </div>
 
