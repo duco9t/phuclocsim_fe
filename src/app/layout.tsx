@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-// Import font local ở đây
+import Footer from "@/components/footer";
+import Header from "@/components/header";
+import { Nothing } from "@/components/nothing";
+// Import font local
 const libertinus = localFont({
   src: [
     {
@@ -28,9 +31,9 @@ export const metadata: Metadata = {
   title: "Phúc Lộc Sim",
   description: "Luận sim phong thủy & đặt lịch tư vấn trực tuyến.",
   icons: {
-    icon: "/favicon.ico",   // icon tab
+    icon: "/favicon.ico",   // favicon tab
     shortcut: "/favicon.ico",
-    apple: "/icon.png",     // cho iOS/Apple devices
+    apple: "/icon.png",     // iOS/Apple devices
   },
 };
 
@@ -40,10 +43,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi">
-      <body className={`${libertinus.variable} antialiased`}>
-        {children}
+    <html lang="vi" className="bg-[#fdf6e3] text-[#3e2723]">
+      <body
+        className={`${libertinus.variable} font-sans antialiased flex flex-col min-h-screen`}
+      >
+        {/* Header cố định */}
+        <Header />
+        <Nothing />
+
+        {/* Nội dung trang */}
+        <main className="flex-1">{children}</main>
+
+        {/* Footer */}
+        <Footer />
       </body>
     </html>
   );
 }
+
