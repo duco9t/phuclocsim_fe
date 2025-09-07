@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { FaTiktok , FaYoutube, FaFacebook } from "react-icons/fa";
 
 const Footer = () => {
     return (
@@ -36,7 +37,7 @@ const Footer = () => {
                         priority
                     />
                     <p className="flex items-center h-30">
-                        Phúc Lộc Sim - Bản quyền &copy; {new Date().getFullYear()} thuộc về
+                        Phúc Lộc Sim - Bản quyền &copy; 2025 thuộc về
                         <a href="https://duco9t.pro.vn" className="ml-1 text-[#d4af37] hover:text-[#ff6851]">
                             Duco
                         </a>
@@ -45,27 +46,15 @@ const Footer = () => {
                 </aside>
 
                 <nav className="md:place-self-center md:justify-self-end">
-                    <div className="grid grid-flow-col gap-4">
-                        <a className="hover:text-[#d4af37] transition-colors">
-                            {/* Twitter */}
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
-                                viewBox="0 0 24 24" className="fill-current">
-                                <path d="M24 4.557c-..."></path>
-                            </svg>
+                    <div className="grid grid-flow-col gap-4 text-[#fdf6e3]">
+                        <a href="#" className="hover:text-[#d4af37] transition-colors">
+                            <FaTiktok  size={24} />
                         </a>
-                        <a className="hover:text-[#d4af37] transition-colors">
-                            {/* YouTube */}
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                viewBox="0 0 24 24" className="fill-current">
-                                <path d="M19.615 3.184c-..."></path>
-                            </svg>
+                        <a href="#" className="hover:text-[#d4af37] transition-colors">
+                            <FaYoutube size={24} />
                         </a>
-                        <a className="hover:text-[#d4af37] transition-colors">
-                            {/* Facebook */}
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                viewBox="0 0 24 24" className="fill-current">
-                                <path d="M9 8h-3v4h3..."></path>
-                            </svg>
+                        <a href="#" className="hover:text-[#d4af37] transition-colors">
+                            <FaFacebook size={24} />
                         </a>
                     </div>
                 </nav>

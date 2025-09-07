@@ -30,7 +30,7 @@ export function SimForm() {
   };
 
   return (
-    <div className="px-4">
+    <div className="px-4 pb-20">
       <Card className="relative w-full max-w-2xl mx-auto overflow-hidden">
         <CardHeader>
           <CardTitle>Luận Sim Phong Thủy</CardTitle>

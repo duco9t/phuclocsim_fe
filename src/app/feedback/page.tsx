@@ -88,7 +88,7 @@ export default function FeedbackPage() {
                 ))}
 
                 {!expanded && feedbacks.length > visibleCount && (
-                    <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white/90 dark:from-gray-900/90 pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#fff8e1] dark:from-gray-900/90 pointer-events-none"></div>
                 )}
             </div>
 
@@ -106,7 +106,7 @@ export default function FeedbackPage() {
                 {expanded && (
                     <Button
                         onClick={handleCollapse}
-                        className="flex items-center gap-2 bg-gray-200 text-gray-800 hover:bg-gray-300 transition-transform transform hover:scale-105"
+                        className="flex items-center gap-2 bg-gray-200 text-gray-800 hover:bg-[#d4af37] transition-transform transform hover:scale-105"
                     >
                         Ẩn đi
                         <HiChevronUp className="w-5 h-5" />

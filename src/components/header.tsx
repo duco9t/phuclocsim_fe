@@ -57,11 +57,13 @@ const Header = () => {
                             </li>
                         ))}
                     </ul>
-                    <ShimmerButton className="shadow-2xl bg-gradient-to-r from-[#d4af37] to-[#f6e75c] text-[#3e2723]">
-                        <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight lg:text-lg">
-                            Đăng nhập
-                        </span>
-                    </ShimmerButton>
+                    <Link href="/login">
+                        <ShimmerButton className="shadow-2xl bg-gradient-to-r from-[#d4af37] to-[#f6e75c] text-[#3e2723]">
+                            <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight lg:text-lg">
+                                Đăng nhập
+                            </span>
+                        </ShimmerButton>
+                    </Link>
                 </div>
             </div>
 
@@ -88,9 +90,11 @@ const Header = () => {
                         whileTap={{ scale: 0.95 }}
                         transition={{ type: "spring", stiffness: 300, damping: 20 }}
                     >
-                        <ShimmerButton>
-                            Đăng nhập
-                        </ShimmerButton>
+                        <Link href="/login">
+                            <ShimmerButton className="block w-full">
+                                Đăng nhập
+                            </ShimmerButton>
+                        </Link>
                     </motion.div>
                 </div>
             )}

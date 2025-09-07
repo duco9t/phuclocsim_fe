@@ -27,7 +27,7 @@ export function StrengthsSection() {
       data={strengths}
       backgroundUrl="https://static.videezy.com/system/resources/previews/000/007/313/original/Plexus.mp4"
       backgroundClassName="absolute top-0 left-0 w-screen h-[90vh] object-cover -z-0 opacity-20"
-      containerClassName="relative bg-gradient-to-r from-amber-900 via-red-900 to-yellow-800 text-white w-screen h-[90vh]"
+      containerClassName="relative bg-gradient-to-br from-[#af9d60] to-[#48312c] text-white w-screen h-[90vh]"
       animationDuration={5000}
       contentWrapperClassName="w-full md:w-11/12 lg:w-10/12 p-10"
       titleTextClassName="text-[1.75rem] md:text-[2rem] lg:text-[2.5rem] text-yellow-300"

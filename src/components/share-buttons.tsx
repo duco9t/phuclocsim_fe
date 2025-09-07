@@ -1,16 +1,27 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { FaCopy, FaFacebookF } from "react-icons/fa";
 import { SiTiktok, SiZalo } from "react-icons/si";
 
 export function ShareButtons() {
-    if (typeof window === "undefined") return null;
-    const shareUrl = window.location.href;
+    const pathname = usePathname();
+    const [shareUrl, setShareUrl] = useState("");
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            setShareUrl(window.location.origin + pathname);
+        }
+    }, [pathname]);
 
     const handleCopy = () => {
+        if (!shareUrl) return;
         navigator.clipboard.writeText(shareUrl);
         alert("Đã sao chép liên kết!");
     };
+
+    if (!shareUrl) return null;
 
     return (
         <div className="flex flex-wrap gap-4 mt-6">

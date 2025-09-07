@@ -167,7 +167,7 @@ export function MarqueeDemo() {
   return (
     <div className="relative flex w-full flex-col items-center justify-center overflow-hidden py-12">
       {/* Tiêu đề */}
-      <h2 className="mb-6 text-2xl font-bold text-center text-yellow-600 dark:text-yellow-400">
+      <h2 className="mb-6 text-2xl font-bold text-center text-[#3e2723]">
         Khách hàng nói gì về chúng tôi
       </h2>
 
@@ -184,8 +184,8 @@ export function MarqueeDemo() {
       </Marquee>
 
       {/* Hiệu ứng fade 2 bên */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background"></div>
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background"></div>
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-[#fff5d7]"></div>
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-[#fceec5] "></div>
     </div>
   );
 }

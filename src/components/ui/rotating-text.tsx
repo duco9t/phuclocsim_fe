@@ -1,20 +1,23 @@
 "use client"
-import { RefObject, useEffect, useRef, useState } from "react"
+
+import { useEffect, useRef } from "react"
 import gsap from "gsap"
 import ScrollTrigger from "gsap/ScrollTrigger"
-import { useGSAP } from "@gsap/react"
 import { cn } from "@/lib/utils"
+
 gsap.registerPlugin(ScrollTrigger)
+
 interface RotatingTextProps {
   text: { data: string; className?: string }[]
-  scrollerRef?: RefObject<HTMLElement>
+  scrollerRef?: React.RefObject<HTMLElement>
   start?: string | number | ScrollTrigger.StartEndFunc
   end?: string | number | ScrollTrigger.StartEndFunc
   scrub?: number | boolean
   markers?: boolean | ScrollTrigger.MarkersVars
   className?: string
 }
-const RotatingText = ({
+
+export default function RotatingText({
   text,
   scrollerRef,
   start = "top top",
@@ -22,32 +25,21 @@ const RotatingText = ({
   scrub = 1,
   markers = false,
   className,
-}: RotatingTextProps) => {
+}: RotatingTextProps) {
   const mainRef = useRef<HTMLDivElement>(null)
   const textRef = useRef<HTMLSpanElement[]>([])
-  const instanceIdRef = useRef<string>(
-    `rotating-text-${Math.random().toString(36).substring(2, 11)}`
-  )
-  const [forceUpdate, setForceUpdate] = useState(false)
+
+  // Tạo default static spans trên server
+  const charOffsets = text.reduce<number[]>((acc, item, i) => {
+    const prev = acc[i - 1] ?? 0
+    const newCount = item.data.length + prev
+    return [...acc, newCount]
+  }, [])
 
   useEffect(() => {
-    console.log("from useEffext")
+    if (!mainRef.current || !textRef.current.length) return
 
-    if (scrollerRef?.current) {
-      setForceUpdate(!forceUpdate)
-    }
-  }, [scrollerRef?.current])
-  useGSAP(() => {
-    console.log("from use Gsap")
-
-    if (!mainRef.current && !textRef.current) return
-
-    // Kill only this component's ScrollTrigger instance if it exists
-    const existingTrigger = ScrollTrigger.getById(instanceIdRef.current)
-    if (existingTrigger) {
-      existingTrigger.kill()
-    }
-
+    // Timeline animation
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: mainRef.current,
@@ -57,21 +49,19 @@ const RotatingText = ({
         pin: true,
         scroller: scrollerRef?.current ?? window,
         markers,
-        id: instanceIdRef.current,
       },
     })
+
+    // Set rotation & scale random khi client mount
     tl.set(textRef.current, {
-      rotationY: (index) =>
-        index % 2 === 0
-          ? gsap.utils.random(150, 180, 1)
-          : gsap.utils.random(-180, -150, 1),
+      rotationY: (i) => (i % 2 === 0 ? 160 : -160),
       scale: 0,
-      transformOrigin: (index) => (index % 2 === 0 ? "bottom" : "top"),
+      transformOrigin: (i) => (i % 2 === 0 ? "bottom" : "top"),
     })
 
     tl.to(textRef.current, {
-      scale: 1,
       rotationY: 0,
+      scale: 1,
       ease: "none",
       stagger: {
         amount: 0.5,
@@ -80,37 +70,22 @@ const RotatingText = ({
     })
 
     return () => {
-      // Cleanup ScrollTrigger instances when component unmounts
-
-      const triggerToKill = ScrollTrigger.getById(instanceIdRef.current)
-      if (triggerToKill) {
-        triggerToKill.kill()
-      }
+      tl.kill()
+      ScrollTrigger.getAll().forEach((st) => st.kill())
     }
-  }, [text, start, end, scrub, markers, forceUpdate])
-
-  const charOffsets = text.reduce<number[]>((acc, item, i) => {
-    const prev = acc[i - 1] ?? 0
-    const newCount = item.data.length + prev
-    return [...acc, newCount]
-  }, [])
+  }, [text, start, end, scrub, markers, scrollerRef])
 
   return (
     <div
       ref={mainRef}
-      className={cn(
-        " h-screen text-9xl",
-        className,
-        " flex justify-center items-center  "
-      )}
+      className={cn("h-screen text-9xl flex justify-center items-center", className)}
       style={{ perspective: "800px" }}
     >
       <div>
         {text.map((t, rowIndex) => (
           <div key={rowIndex} className={cn(t.className, "text-center")}>
             {t.data.split("").map((char, charIndex) => {
-              const globalIndex =
-                charIndex + (rowIndex > 0 ? charOffsets[rowIndex - 1] : 0)
+              const globalIndex = charIndex + (rowIndex > 0 ? charOffsets[rowIndex - 1] : 0)
               return (
                 <span
                   key={charIndex}
@@ -133,7 +108,6 @@ const RotatingText = ({
   )
 }
 
-export default RotatingText
 
 // "use client"
 

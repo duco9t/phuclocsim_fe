@@ -134,9 +134,9 @@ export const TextHoverEffect = ({
           dominantBaseline="middle"
           strokeWidth="0.3"
           className={`fill-transparent font-[helvetica] font-bold ${idx === 0
-              ? "stroke-neutral-200 dark:stroke-neutral-800"
+              ? "stroke-neutral-300 dark:stroke-neutral-800"
               : idx === 1
-                ? "stroke-neutral-200 dark:stroke-neutral-800"
+                ? "stroke-neutral-300 dark:stroke-neutral-800"
                 : ""
             }`}
           stroke={idx === 2 ? "url(#textGradient)" : undefined}

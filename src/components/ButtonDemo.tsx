@@ -10,7 +10,7 @@ export function ButtonDemo() {
       </div>
 
       {/* CTA buttons bên phải */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-4 my-10">
         <Button3 className="px-6 py-3 rounded-xl text-lg font-bold text-white bg-black hover:bg-yellow-500 hover:text-black shadow-md hover:shadow-lg transition">
           Luận sim ngay
         </Button3>

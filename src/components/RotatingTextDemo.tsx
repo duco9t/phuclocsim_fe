@@ -3,7 +3,7 @@ import RotatingText from "@/components/ui/rotating-text"
 
 export function RotatingText1() {
   return (
-    <div className="w-full md:w-11/12 lg:w-10/12 p-10 flex justify-center items-center flex-col text-center mx-auto mb-20 -mt-40">
+    <div className="w-full md:w-11/12 lg:w-10/12 p-10 flex justify-center items-center flex-col text-center mx-auto mb-50 -mt-50">
       <RotatingText
         text={[
           { data: "Phúc Lộc Sim", className: "text-7xl font-bold text-[#3e2723]" },

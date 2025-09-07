@@ -43,14 +43,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" className="bg-[#fdf6e3] text-[#3e2723]">
+    <html lang="vi" className="text-[#3e2723]">
       <body
-        className={`${libertinus.variable} font-sans antialiased flex flex-col min-h-screen`}
+        className={`${libertinus.variable} font-sans antialiased flex flex-col min-h-screen bg-gradient-to-br from-[#fff8e1] to-[#fceabb]`}
       >
         {/* Header cố định */}
         <Header />
         <Nothing />
-
         {/* Nội dung trang */}
         <main className="flex-1">{children}</main>
 
