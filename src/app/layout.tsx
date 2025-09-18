@@ -5,6 +5,10 @@ import "./globals.css";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { Nothing } from "@/components/nothing";
+import { AuthProvider } from "@/contexts/AuthContext";
+import Loader from "@/components/Loader";
+import '@/styles/nprogress.css'; // global
+
 // Import font local
 const libertinus = localFont({
   src: [
@@ -47,14 +51,17 @@ export default function RootLayout({
       <body
         className={`${libertinus.variable} font-sans antialiased flex flex-col min-h-screen bg-gradient-to-br from-[#fff8e1] to-[#fceabb]`}
       >
-        {/* Header cố định */}
-        <Header />
-        <Nothing />
-        {/* Nội dung trang */}
-        <main className="flex-1">{children}</main>
+        <AuthProvider>
+          {/* Header cố định */}
+          <Loader />
+          <Header />
+          <Nothing />
+          {/* Nội dung trang */}
+          <main className="flex-1">{children}</main>
 
-        {/* Footer */}
-        <Footer />
+          {/* Footer */}
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

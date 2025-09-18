@@ -1,0 +1,18 @@
+/* global nprogress styles */
+#nprogress {
+  pointer-events: none;
+}
+
+#nprogress .bar {
+  background: #d4af37 !important; /* màu vàng gold */
+  height: 3px !important;
+  z-index: 9999 !important;
+}
+
+#nprogress .peg {
+  box-shadow: 0 0 10px #d4af37, 0 0 5px #d4af37 !important;
+}
+
+#nprogress .spinner {
+  display: none !important;
+}

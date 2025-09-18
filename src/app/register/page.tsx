@@ -21,16 +21,66 @@ export default function RegisterPage() {
     const [openTerms, setOpenTerms] = useState(false);
     const [accepted, setAccepted] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    // form data
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({
+            ...formData,
+            [e.target.id]: e.target.value,
+        });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!accepted) {
             setError("Vui lòng đồng ý với Điều khoản & Chính sách trước khi tiếp tục.");
             return;
         }
+        if (formData.password !== formData.confirmPassword) {
+            setError("Mật khẩu xác nhận không khớp.");
+            return;
+        }
+
         setError(null);
-        // TODO: gọi API đăng ký ở đây
-        alert("Đăng ký thành công (demo).");
+        setLoading(true);
+
+        try {
+            const res = await fetch("http://localhost:3009/api/user/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok || data.status === "ERR") {
+                setError(data.message || "Đăng ký thất bại.");
+            } else {
+                alert("Đăng ký thành công! Vui lòng đăng nhập.");
+                // optional: chuyển hướng sang login
+                // router.push("/login");
+            }
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message || "Lỗi kết nối server.");
+            } else {
+                setError("Lỗi kết nối server.");
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -40,7 +90,6 @@ export default function RegisterPage() {
                     gradientColor={theme === "dark" ? "#333333" : "#d4af37"}
                     className="relative overflow-hidden rounded-2xl"
                 >
-                    {/* Header */}
                     <CardHeader className="p-6 text-center">
                         <CardTitle className="text-3xl font-bold text-[#d4af37]">
                             Đăng ký
@@ -51,81 +100,80 @@ export default function RegisterPage() {
                         </CardDescription>
                     </CardHeader>
 
-                    {/* Form */}
                     <CardContent className="px-6 pb-4">
                         <form className="space-y-5" onSubmit={handleSubmit}>
                             {/* Name */}
                             <div className="grid gap-2">
-                                <Label htmlFor="name" className="text-sm font-medium">
-                                    Họ và tên
-                                </Label>
+                                <Label htmlFor="name">Họ và tên</Label>
                                 <div className="relative">
                                     <User className="absolute left-3 top-2 h-5 w-5 text-gray-500" />
                                     <Input
                                         id="name"
                                         type="text"
+                                        value={formData.name}
+                                        onChange={handleChange}
                                         placeholder="Nguyễn Văn A"
-                                        className="pl-10 focus:ring-2 focus:ring-[#d4af37] focus:border-[#d4af37]"
                                         required
+                                        className="pl-10"
                                     />
                                 </div>
                             </div>
 
                             {/* Email */}
                             <div className="grid gap-2">
-                                <Label htmlFor="email" className="text-sm font-medium">
-                                    Email
-                                </Label>
+                                <Label htmlFor="email">Email</Label>
                                 <div className="relative">
                                     <Mail className="absolute left-3 top-2 h-5 w-5 text-gray-500" />
                                     <Input
                                         id="email"
                                         type="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
                                         placeholder="nhapemail@example.com"
-                                        className="pl-10 focus:ring-2 focus:ring-[#d4af37] focus:border-[#d4af37]"
                                         required
+                                        className="pl-10"
                                     />
                                 </div>
                             </div>
 
                             {/* Password */}
                             <div className="grid gap-2">
-                                <Label htmlFor="password" className="text-sm font-medium">
-                                    Mật khẩu
-                                </Label>
+                                <Label htmlFor="password">Mật khẩu</Label>
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-2 h-5 w-5 text-gray-500" />
                                     <Input
                                         id="password"
                                         type="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
                                         placeholder="••••••••"
-                                        className="pl-10 focus:ring-2 focus:ring-[#d4af37] focus:border-[#d4af37]"
                                         minLength={8}
                                         required
+                                        className="pl-10"
                                     />
                                 </div>
                             </div>
 
                             {/* Confirm Password */}
                             <div className="grid gap-2">
-                                <Label htmlFor="confirm-password" className="text-sm font-medium">
-                                    Xác nhận mật khẩu
-                                </Label>
+                                <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-2 h-5 w-5 text-gray-500" />
                                     <Input
-                                        id="confirm-password"
+                                        id="confirmPassword"
                                         type="password"
+                                        value={formData.confirmPassword}
+                                        onChange={handleChange}
                                         placeholder="••••••••"
-                                        className="pl-10 focus:ring-2 focus:ring-[#d4af37] focus:border-[#d4af37]"
                                         minLength={8}
                                         required
+                                        className="pl-10"
                                     />
                                 </div>
                             </div>
 
                             {/* Terms */}
-                            <div className="flex items-start gap-3 rounded-lg border border-border/60 p-3">
+                            <div className="flex items-start gap-3 rounded-lg border p-3">
                                 <input
                                     id="accept"
                                     type="checkbox"
@@ -145,21 +193,17 @@ export default function RegisterPage() {
                                 </Label>
                             </div>
 
-                            {error && (
-                                <p className="text-sm text-red-600">{error}</p>
-                            )}
+                            {error && <p className="text-sm text-red-600">{error}</p>}
 
-                            {/* Button */}
                             <Button
-                                className="w-full mt-1 bg-gradient-to-r from-[#d4af37] to-[#f6e75c] text-black font-semibold shadow-md hover:from-[#c19a2b] hover:to-[#e6d94a] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                                disabled={!accepted}
+                                className="w-full mt-1 bg-gradient-to-r from-[#d4af37] to-[#f6e75c] text-black font-semibold shadow-md hover:from-[#c19a2b] hover:to-[#e6d94a] transition-all"
+                                disabled={!accepted || loading}
                             >
-                                Đăng ký
+                                {loading ? "Đang xử lý..." : "Đăng ký"}
                             </Button>
                         </form>
                     </CardContent>
 
-                    {/* Footer */}
                     <CardFooter className="flex justify-center pb-6">
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                             Đã có tài khoản?{" "}
@@ -170,6 +214,7 @@ export default function RegisterPage() {
                     </CardFooter>
                 </MagicCard>
             </Card>
+
 
             {/* TERMS MODAL */}
             {openTerms && (
