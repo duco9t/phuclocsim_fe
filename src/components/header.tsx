@@ -44,7 +44,6 @@ const Header = () => {
         { name: "Luận Sim", href: "/sim-form" },
         { name: "Phản hồi", href: "/feedback" },
         { name: "Blog", href: "/blog" },
-        { name: "Liên hệ", href: "/contact" },
     ];
 
     return (

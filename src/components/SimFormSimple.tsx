@@ -66,14 +66,18 @@ export function SimForm() {
           };
         });
 
+      // Map giá trị theo enum backend
+      const nhuCauEnum = nhuCau === "XEM_SIM" || nhuCau === "THIET_KE_SIM_MOI" ? nhuCau : (nhuCau.toUpperCase().replace(/-/g, "_") as any);
+      const fastEnum = fastResultMethod === "ZALO" || fastResultMethod === "SMS" || fastResultMethod === "EMAIL" ? fastResultMethod : (fastResultMethod.toUpperCase() as any);
+
       const body = {
         fullName,
         birthDate,
         cccd,
         sims,
-        nhuCau,
+        nhuCau: nhuCauEnum,
         mucTieu,
-        fastResultMethod,
+        fastResultMethod: fastEnum,
         meetingType,
         meetingTime: meetingTime || null,
         note,
@@ -86,7 +90,9 @@ export function SimForm() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Lỗi gửi request");
+      if (!res.ok || data?.success === false) {
+        throw new Error(data?.message || "Lỗi gửi request");
+      }
 
       alert("Gửi form thành công!");
     } catch (err: any) {
