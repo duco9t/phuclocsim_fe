@@ -10,16 +10,18 @@ async function getPosts() {
     try {
         const base = process.env.NEXT_PUBLIC_API_URL || "https://sim-phong-thuy-backend-production.up.railway.app";
         const response = await fetch(base + "/api/blog", {
-            cache: 'no-store' // hoặc có thể dùng revalidate: 60 cho cache
+            cache: 'no-store' // hoặc revalidate: 60
         });
         const data = await response.json();
 
         if (data?.success && Array.isArray(data.data)) {
-            return data.data.map((b: { slug: string; title: string; summary?: string }) => ({
-                slug: b.slug,
-                title: b.title,
-                summary: b.summary || "" // Đổi từ description thành summary
-            }));
+            return data.data
+                .filter((b: { published?: boolean }) => b.published) // Chỉ lấy blog published
+                .map((b: { slug: string; title: string; summary?: string }) => ({
+                    slug: b.slug,
+                    title: b.title,
+                    summary: b.summary || "" // Nếu không có summary thì để rỗng
+                }));
         }
         return [];
     } catch (error) {
