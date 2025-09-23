@@ -17,7 +17,7 @@ export default function AccountPage() {
 
     useEffect(() => {
         if (user?._id) {
-            fetch(`http://localhost:3009/api/user/getuser/${user._id}`)
+            fetch(`https://sim-phong-thuy-backend-production.up.railway.app/api/user/getuser/${user._id}`)
                 .then((res) => res.json())
                 .then((data) => {
                     if (data.success) {

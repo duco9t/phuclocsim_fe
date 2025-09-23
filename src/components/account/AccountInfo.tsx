@@ -20,7 +20,7 @@ export default function AccountInfo({ user }: Props) {
 
     const handleUpdate = async () => {
         try {
-            const res = await fetch(`http://localhost:3009/api/user/update/${user._id}`, {
+            const res = await fetch(`https://sim-phong-thuy-backend-production.up.railway.app/api/user/update/${user._id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(form),

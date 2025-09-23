@@ -22,7 +22,7 @@ export default function FeedbackForm({ user, onSubmitted }: Props) {
         }
         setLoading(true);
         try {
-            const res = await fetch("http://localhost:3009/api/feedback/create", {
+            const res = await fetch("https://sim-phong-thuy-backend-production.up.railway.app/api/feedback/create", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message, rating, userId: user._id }),

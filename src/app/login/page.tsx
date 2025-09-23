@@ -44,7 +44,7 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const res = await fetch("http://localhost:3009/api/user/login", {
+            const res = await fetch("https://sim-phong-thuy-backend-production.up.railway.app/api/user/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),

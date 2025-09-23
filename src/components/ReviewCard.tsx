@@ -2,7 +2,14 @@
 
 import { Marquee } from "@/components/magicui/marquee";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import { useEffect, useState } from "react";
+
+interface ApiFeedback {
+  customerName?: string;
+  source?: string;
+  message: string;
+}
 
 interface Review {
   name: string;
@@ -16,26 +23,22 @@ const ReviewCard = ({ img, name, username, body }: Review) => {
     <figure
       className={cn(
         "relative h-full w-64 cursor-pointer overflow-hidden rounded-xl border p-4",
-        // light styles
         "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
-        // dark styles
         "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
       )}
     >
       <div className="flex flex-row items-center gap-2">
-        <img
-          className="rounded-full"
-          width="32"
-          height="32"
-          alt={name}
-          src={`https://avatar.vercel.sh/${encodeURIComponent(name)}?fallback=${encodeURIComponent(
-            img
-          )}&size=128`}
-        />
+        <div className="relative w-8 h-8">
+          <Image
+            className="rounded-full"
+            src={`https://avatar.vercel.sh/${encodeURIComponent(name)}?fallback=${encodeURIComponent(img)}&size=128`}
+            alt={name}
+            fill
+            sizes="32px"
+          />
+        </div>
         <div className="flex flex-col">
-          <figcaption className="text-sm font-medium dark:text-white">
-            {name}
-          </figcaption>
+          <figcaption className="text-sm font-medium dark:text-white">{name}</figcaption>
           <p className="text-xs font-medium dark:text-white/40">{username}</p>
         </div>
       </div>
@@ -44,12 +47,11 @@ const ReviewCard = ({ img, name, username, body }: Review) => {
   );
 };
 
-// 👉 adapter: map API feedback sang ReviewCard props
-const mapFeedbackToReview = (fb: any): Review => ({
-  name: fb.customerName,
+// adapter map API -> Review
+const mapFeedbackToReview = (fb: ApiFeedback): Review => ({
+  name: fb.customerName || "Ẩn danh",
   username: fb.source || "Ẩn danh",
   body: fb.message,
-  // ảnh avatar mặc định (không lấy từ API)
   img: "/default-avatar.png",
 });
 
@@ -60,14 +62,12 @@ export function MarqueeDemo() {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch("http://localhost:3009/api/feedback/getAll");
+        const res = await fetch(
+          "https://sim-phong-thuy-backend-production.up.railway.app/api/feedback/getAll"
+        );
         const data = await res.json();
-
-        console.log("👉 full response:", data);
-        console.log("👉 data.data (mảng feedbacks):", data.data);
-
-        // map feedbacks sang review format
-        setReviews((data.data || []).map(mapFeedbackToReview));
+        const feedbacks: ApiFeedback[] = Array.isArray(data.data) ? data.data : [];
+        setReviews(feedbacks.map(mapFeedbackToReview));
       } catch (err) {
         console.error("❌ Lỗi fetch feedback:", err);
       } finally {
@@ -77,21 +77,8 @@ export function MarqueeDemo() {
     fetchReviews();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-gray-600">Đang tải feedback...</p>
-      </div>
-    );
-  }
-
-  if (!reviews.length) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-gray-600">Chưa có feedback nào.</p>
-      </div>
-    );
-  }
+  if (loading) return <p className="py-12 text-center text-gray-600">Đang tải feedback...</p>;
+  if (!reviews.length) return <p className="py-12 text-center text-gray-600">Chưa có feedback nào.</p>;
 
   const half = Math.ceil(reviews.length / 2);
   const firstRow = reviews.slice(0, half);
@@ -99,12 +86,10 @@ export function MarqueeDemo() {
 
   return (
     <div className="relative flex w-full flex-col items-center justify-center overflow-hidden py-12">
-      {/* Tiêu đề */}
       <h2 className="mb-6 text-2xl font-bold text-center text-[#3e2723]">
         Khách hàng nói gì về chúng tôi
       </h2>
 
-      {/* Hàng review chạy */}
       <Marquee pauseOnHover className="[--duration:80s]">
         {firstRow.map((review, i) => (
           <ReviewCard key={i} {...review} />
@@ -116,7 +101,6 @@ export function MarqueeDemo() {
         ))}
       </Marquee>
 
-      {/* Hiệu ứng fade 2 bên */}
       <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-[#fff5d7]"></div>
       <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-[#fceec5]"></div>
     </div>

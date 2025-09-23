@@ -17,29 +17,50 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 
+// --- Types ---
+type NhuCauEnum = "XEM_SIM" | "THIET_KE_SIM_MOI";
+type FastResultEnum = "ZALO" | "SMS" | "EMAIL";
+type MucTieuEnum = "KINH_DOANH_CONG_VIEC" | "TINH_DUYEN_GIA_DAO" | "TAI_LOC_MAY_MAN";
+
+interface SimItem {
+  phoneNumber: string;
+  usedDurationMonths: number | null;
+}
+
+interface SimFormBody {
+  fullName: string;
+  birthDate: string;
+  cccd: string;
+  sims: SimItem[];
+  nhuCau: NhuCauEnum;
+  mucTieu: MucTieuEnum[];
+  fastResultMethod: FastResultEnum;
+  meetingType: string;
+  meetingTime: string | null;
+  note: string;
+}
+
 export function SimForm() {
   const [loading, setLoading] = useState(false);
 
-  // State cho từng field
   const [fullName, setFullName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [cccd, setCccd] = useState("");
-  const [simsText, setSimsText] = useState(""); // VD: "0909xxxxxx - 36\n0912yyyyyy - 12"
-  const [nhuCau, setNhuCau] = useState("xem-sim");
-  const [mucTieu, setMucTieu] = useState<string[]>([]);
-  const [fastResultMethod, setFastResultMethod] = useState("zalo");
+  const [simsText, setSimsText] = useState("");
+  const [nhuCau, setNhuCau] = useState<NhuCauEnum>("XEM_SIM");
+  const [mucTieu, setMucTieu] = useState<MucTieuEnum[]>([]);
+  const [fastResultMethod, setFastResultMethod] = useState<FastResultEnum>("ZALO");
   const [meetingType, setMeetingType] = useState("NONE");
   const [meetingTime, setMeetingTime] = useState("");
   const [note, setNote] = useState("");
 
-  const VALID_MUC_TIEU = [
+  const VALID_MUC_TIEU: MucTieuEnum[] = [
     "KINH_DOANH_CONG_VIEC",
     "TINH_DUYEN_GIA_DAO",
     "TAI_LOC_MAY_MAN",
-  ] as const;
+  ];
 
-  const toggleMucTieu = (value: string) => {
-    if (!VALID_MUC_TIEU.includes(value as any)) return; // chặn giá trị rác
+  const toggleMucTieu = (value: MucTieuEnum) => {
     setMucTieu((prev) =>
       prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
     );
@@ -47,15 +68,16 @@ export function SimForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (mucTieu.length === 0) {
       alert("Vui lòng chọn ít nhất một mục tiêu.");
       return;
     }
+
     setLoading(true);
 
     try {
-      // Parse sims: mỗi dòng "số - số tháng"
-      const sims = simsText
+      const sims: SimItem[] = simsText
         .split("\n")
         .filter(Boolean)
         .map((line) => {
@@ -66,37 +88,39 @@ export function SimForm() {
           };
         });
 
-      // Map giá trị theo enum backend
-      const nhuCauEnum = nhuCau === "XEM_SIM" || nhuCau === "THIET_KE_SIM_MOI" ? nhuCau : (nhuCau.toUpperCase().replace(/-/g, "_") as any);
-      const fastEnum = fastResultMethod === "ZALO" || fastResultMethod === "SMS" || fastResultMethod === "EMAIL" ? fastResultMethod : (fastResultMethod.toUpperCase() as any);
-
-      const body = {
+      const body: SimFormBody = {
         fullName,
         birthDate,
         cccd,
         sims,
-        nhuCau: nhuCauEnum,
+        nhuCau,
         mucTieu,
-        fastResultMethod: fastEnum,
+        fastResultMethod,
         meetingType,
         meetingTime: meetingTime || null,
         note,
       };
 
-      const res = await fetch("http://localhost:3009/api/request/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+      const res = await fetch(
+        "https://sim-phong-thuy-backend-production.up.railway.app/api/request/create",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        }
+      );
 
-      const data = await res.json();
-      if (!res.ok || data?.success === false) {
-        throw new Error(data?.message || "Lỗi gửi request");
+      const data: { success: boolean; message?: string } = await res.json();
+
+      if (!res.ok || data.success === false) {
+        throw new Error(data.message || "Lỗi gửi request");
       }
 
       alert("Gửi form thành công!");
-    } catch (err: any) {
-      alert("Lỗi: " + err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        alert("Lỗi: " + err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -114,11 +138,9 @@ export function SimForm() {
 
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-6">
-            {/* Thông tin khách hàng */}
+            {/* Họ và tên */}
             <div className="space-y-2">
-              <Label>
-                Họ và tên <span className="text-red-500">*</span>
-              </Label>
+              <Label>Họ và tên <span className="text-red-500">*</span></Label>
               <Input
                 placeholder="Nguyễn Văn A"
                 required
@@ -126,10 +148,10 @@ export function SimForm() {
                 onChange={(e) => setFullName(e.target.value)}
               />
             </div>
+
+            {/* Ngày sinh */}
             <div className="space-y-2">
-              <Label>
-                Ngày tháng năm sinh <span className="text-red-500">*</span>
-              </Label>
+              <Label>Ngày tháng năm sinh <span className="text-red-500">*</span></Label>
               <Input
                 type="date"
                 required
@@ -137,10 +159,10 @@ export function SimForm() {
                 onChange={(e) => setBirthDate(e.target.value)}
               />
             </div>
+
+            {/* CCCD */}
             <div className="space-y-2">
-              <Label>
-                Số CCCD <span className="text-red-500">*</span>
-              </Label>
+              <Label>Số CCCD <span className="text-red-500">*</span></Label>
               <Input
                 type="text"
                 inputMode="numeric"
@@ -148,19 +170,13 @@ export function SimForm() {
                 placeholder="012345678901"
                 required
                 value={cccd}
-                onChange={(e) => {
-                  const onlyNums = e.target.value.replace(/\D/g, ""); // xoá hết ký tự không phải số
-                  setCccd(onlyNums);
-                }}
+                onChange={(e) => setCccd(e.target.value.replace(/\D/g, ""))}
               />
             </div>
 
-            {/* Thông tin sim hiện tại */}
+            {/* Danh sách sim */}
             <div className="space-y-2">
-              <Label>
-                Danh sách số điện thoại (số - số tháng đã dùng){" "}
-                <span className="text-red-500">*</span>
-              </Label>
+              <Label>Danh sách số điện thoại (số - số tháng đã dùng) <span className="text-red-500">*</span></Label>
               <Textarea
                 placeholder={`VD:\n0909xxxxxx - 36\n0912yyyyyy - 12`}
                 required
@@ -172,7 +188,7 @@ export function SimForm() {
             {/* Nhu cầu */}
             <div>
               <Label className="mb-2 block">Nhu cầu</Label>
-              <RadioGroup value={nhuCau} onValueChange={setNhuCau}>
+              <RadioGroup value={nhuCau} onValueChange={(val) => setNhuCau(val as NhuCauEnum)}>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="XEM_SIM" id="xem-sim" />
                   <Label htmlFor="xem-sim">Xem phong thủy sim đang dùng</Label>
@@ -184,114 +200,70 @@ export function SimForm() {
               </RadioGroup>
             </div>
 
-            {/* Mục tiêu chính */}
+            {/* Mục tiêu */}
             <div>
               <Label className="mb-2 block">Mục tiêu chính<span className="text-red-500">*</span></Label>
               <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="kinh-doanh"
-                    checked={mucTieu.includes("KINH_DOANH_CONG_VIEC")}
-                    onCheckedChange={() => toggleMucTieu("KINH_DOANH_CONG_VIEC")}
-                  />
-                  <Label htmlFor="kinh-doanh">Kinh doanh – Công việc</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="tinh-duyen"
-                    checked={mucTieu.includes("TINH_DUYEN_GIA_DAO")}
-                    onCheckedChange={() => toggleMucTieu("TINH_DUYEN_GIA_DAO")}
-                  />
-                  <Label htmlFor="tinh-duyen">Tình duyên – Gia đạo</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="tai-loc"
-                    checked={mucTieu.includes("TAI_LOC_MAY_MAN")}
-                    onCheckedChange={() => toggleMucTieu("TAI_LOC_MAY_MAN")}
-                  />
-                  <Label htmlFor="tai-loc">Tài lộc – May mắn</Label>
-                </div>
+                {VALID_MUC_TIEU.map((t) => (
+                  <div key={t} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={t}
+                      checked={mucTieu.includes(t)}
+                      onCheckedChange={() => toggleMucTieu(t)}
+                    />
+                    <Label htmlFor={t}>{t.replace(/_/g, " ").toLowerCase()}</Label>
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* Cách nhận kết quả */}
             <div>
               <Label className="mb-2 block">Cách nhận kết quả nhanh</Label>
-              <RadioGroup value={fastResultMethod} onValueChange={(val) => setFastResultMethod(val)}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="ZALO" id="zalo" />
-                  <Label htmlFor="zalo">Zalo</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="SMS" id="sms" />
-                  <Label htmlFor="sms">SMS</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="EMAIL" id="email" />
-                  <Label htmlFor="email">Email</Label>
-                </div>
+              <RadioGroup value={fastResultMethod} onValueChange={(val) => setFastResultMethod(val as FastResultEnum)}>
+                {["ZALO", "SMS", "EMAIL"].map((method) => (
+                  <div key={method} className="flex items-center space-x-2">
+                    <RadioGroupItem value={method} id={method.toLowerCase()} />
+                    <Label htmlFor={method.toLowerCase()}>{method}</Label>
+                  </div>
+                ))}
               </RadioGroup>
             </div>
 
-            {/* Meeting Type */}
+            {/* Meeting */}
             <div className="space-y-2">
               <Label>Hình thức gặp mặt</Label>
-              <select
-                className="border p-2 rounded w-full"
-                value={meetingType}
-                onChange={(e) => setMeetingType(e.target.value)}
-              >
+              <select className="border p-2 rounded w-full" value={meetingType} onChange={(e) => setMeetingType(e.target.value)}>
                 <option value="NONE">Không cần</option>
                 <option value="ZOOM">Zoom</option>
               </select>
             </div>
-
-            {/* Meeting Time */}
             <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                Thời gian hẹn (nếu có)
-              </Label>
+              <Label>Thời gian hẹn (nếu có)</Label>
               <div className="grid grid-cols-2 gap-3">
                 <Input
                   type="date"
                   value={meetingTime ? meetingTime.split("T")[0] : ""}
                   onChange={(e) =>
-                    setMeetingTime(
-                      e.target.value
-                        ? `${e.target.value}T${meetingTime.split("T")[1] || "09:00"}`
-                        : ""
-                    )
+                    setMeetingTime(e.target.value ? `${e.target.value}T${meetingTime.split("T")[1] || "09:00"}` : "")
                   }
                 />
                 <Input
                   type="time"
                   value={meetingTime ? meetingTime.split("T")[1] : ""}
                   onChange={(e) =>
-                    setMeetingTime(
-                      meetingTime
-                        ? `${meetingTime.split("T")[0]}T${e.target.value}`
-                        : `2025-01-01T${e.target.value}`
-                    )
+                    setMeetingTime(meetingTime ? `${meetingTime.split("T")[0]}T${e.target.value}` : `2025-01-01T${e.target.value}`)
                   }
                 />
               </div>
-              <p className="text-sm text-gray-500">
-                📅 Chọn ngày & giờ mong muốn, hoặc để trống nếu không cần.
-              </p>
+              <p className="text-sm text-gray-500">📅 Chọn ngày & giờ mong muốn, hoặc để trống nếu không cần.</p>
             </div>
 
             {/* Note */}
             <div className="space-y-2">
               <Label>Ghi chú thêm</Label>
-              <Textarea
-                placeholder="Ghi chú mong muốn khác..."
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-              />
-              <p className="text-sm text-gray-500 mb-4">
-                📝 Nếu chọn nhận kết quả qua Zalo, SMS hoặc Email vui lòng nhập tại đây.
-              </p>
+              <Textarea placeholder="Ghi chú mong muốn khác..." value={note} onChange={(e) => setNote(e.target.value)} />
+              <p className="text-sm text-gray-500 mb-4">📝 Nếu chọn nhận kết quả qua Zalo, SMS hoặc Email vui lòng nhập tại đây.</p>
             </div>
           </CardContent>
 
@@ -302,18 +274,8 @@ export function SimForm() {
           </CardFooter>
         </form>
 
-        <BorderBeam
-          duration={6}
-          size={400}
-          className="from-transparent via-red-500 to-transparent"
-        />
-        <BorderBeam
-          duration={6}
-          delay={3}
-          size={400}
-          borderWidth={2}
-          className="from-transparent via-blue-500 to-transparent"
-        />
+        <BorderBeam duration={6} size={400} className="from-transparent via-red-500 to-transparent" />
+        <BorderBeam duration={6} delay={3} size={400} borderWidth={2} className="from-transparent via-blue-500 to-transparent" />
       </Card>
     </div>
   );

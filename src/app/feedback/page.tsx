@@ -6,24 +6,29 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 
-/**
- * Feedback page:
- * - fetches all feedbacks from GET /api/feedback/getAll
- * - allows logged-in users to post feedback via POST /api/feedback/create
- * - if not logged in => form is dimmed and only shows login CTA
- */
+type ApiFeedback = {
+    _id?: string;
+    customerName?: string;
+    username?: string;
+    text?: string;
+    message?: string;
+    rating?: number;
+    imageUrls?: string[];
+    videoUrl?: string;
+    createdAt?: string;
+};
 
 type LocalFeedback = {
-    _id?: string; // may exist from API
-    id?: number; // for local ones
+    _id?: string;
+    id?: number;
     customerName?: string;
     username?: string;
     text: string;
-    message?: string;
     rating?: number;
     imageUrl?: string;
     createdAt?: string;
@@ -37,20 +42,20 @@ export default function FeedbackPage() {
     const [expanded, setExpanded] = useState(false);
 
     // form
-    const [username, setUsername] = useState("");
     const [text, setText] = useState("");
     const [rating, setRating] = useState<number>(5);
-    const [image, setImage] = useState<File | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [loadingSubmit, setLoadingSubmit] = useState(false);
 
     const fetchFeedbacks = async () => {
         try {
-            const res = await fetch("http://localhost:3009/api/feedback/getAll");
+            const res = await fetch(
+                "https://sim-phong-thuy-backend-production.up.railway.app/api/feedback/getAll"
+            );
             const json = await res.json();
-            // API shape: { status, success, data: [...] }
-            const items: any[] = Array.isArray(json?.data) ? json.data : [];
-            const mapped = items.map((it) => ({
+
+            const items: ApiFeedback[] = Array.isArray(json?.data) ? json.data : [];
+            const mapped: LocalFeedback[] = items.map((it) => ({
                 _id: it._id,
                 customerName: it.customerName,
                 username: it.username ?? "",
@@ -59,6 +64,7 @@ export default function FeedbackPage() {
                 createdAt: it.createdAt,
                 imageUrl: (it.imageUrls && it.imageUrls[0]) || it.videoUrl || undefined,
             }));
+
             setFeedbacks(mapped);
         } catch (err) {
             console.error("Cannot load feedbacks", err);
@@ -88,26 +94,26 @@ export default function FeedbackPage() {
         }
         setLoadingSubmit(true);
         try {
-            const payload: any = {
+            const payload = {
                 userId: user._id,
                 message: text,
                 rating,
             };
-            const res = await fetch("http://localhost:3009/api/feedback/create", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
+            const res = await fetch(
+                "https://sim-phong-thuy-backend-production.up.railway.app/api/feedback/create",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                }
+            );
             const json = await res.json();
 
             if (json?.success || json?.status === "OK") {
                 await fetchFeedbacks();
                 setText("");
                 setRating(5);
-                setImage(null);
-                setUsername("");
 
-                // 🔥 hiện popup thành công
                 setSuccessMessage("Gửi phản hồi thành công!");
                 setTimeout(() => setSuccessMessage(null), 3000);
             } else {
@@ -120,7 +126,6 @@ export default function FeedbackPage() {
             setLoadingSubmit(false);
         }
     };
-
 
     return (
         <main className="max-w-5xl mx-auto px-6 py-12 space-y-8">
@@ -150,7 +155,9 @@ export default function FeedbackPage() {
                                     <div className="flex items-center text-yellow-500">
                                         {"★".repeat(fb.rating ?? 0)}
                                         {"☆".repeat(5 - (fb.rating ?? 0))}
-                                        <span className="ml-2 text-sm text-gray-700">{fb.rating ?? 0}/5</span>
+                                        <span className="ml-2 text-sm text-gray-700">
+                                            {fb.rating ?? 0}/5
+                                        </span>
                                     </div>
                                     <div className="text-xs text-gray-400 ml-auto">
                                         {fb.createdAt
@@ -168,11 +175,14 @@ export default function FeedbackPage() {
                                 <p className="text-gray-700">{fb.text}</p>
 
                                 {fb.imageUrl && (
-                                    <img
-                                        src={fb.imageUrl}
-                                        alt="feedback"
-                                        className="w-full h-auto rounded-md object-cover"
-                                    />
+                                    <div className="relative w-full h-60 rounded-md overflow-hidden">
+                                        <Image
+                                            src={fb.imageUrl}
+                                            alt="feedback"
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
                                 )}
                             </CardContent>
                         </Card>
@@ -213,7 +223,6 @@ export default function FeedbackPage() {
                 </CardHeader>
                 <CardContent className="space-y-4 relative">
                     {isLogged ? (
-                        // --- Nếu đã đăng nhập thì hiện form ---
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <Label htmlFor="text">Nội dung</Label>
@@ -255,7 +264,6 @@ export default function FeedbackPage() {
                             </Button>
                         </form>
                     ) : (
-                        // --- Nếu chưa đăng nhập thì hiện overlay với nút login ---
                         <div className="absolute inset-0 flex items-center justify-center">
                             <Link href="/login">
                                 <Button className="bg-[#f6e75c] text-[#3e2723] hover:bg-[#e6d64f] text-lg px-6 py-3 rounded-xl shadow-lg cursor-pointer">
@@ -266,12 +274,12 @@ export default function FeedbackPage() {
                     )}
                 </CardContent>
             </Card>
+
             {successMessage && (
                 <div className="fixed bottom-6 right-6 bg-green-500 text-white px-5 py-3 rounded-lg shadow-lg animate-bounce z-50">
                     {successMessage}
                 </div>
             )}
-
         </main>
     );
 }

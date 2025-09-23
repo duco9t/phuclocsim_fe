@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 // ---- Metadata cho tab trình duyệt ----
 export async function generateMetadata({ params }: { params: { slug: string } }) {
-    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3009";
+    const base = process.env.NEXT_PUBLIC_API_URL || "https://sim-phong-thuy-backend-production.up.railway.app";
     const res = await fetch(`${base}/api/blog/${params.slug}`, { cache: "no-store" });
     const data = await res.json();
     const post = data?.data;
@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 // ---- Component chính ----
 export default async function PostPage({ params }: { params: { slug: string } }) {
-    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3009";
+    const base = process.env.NEXT_PUBLIC_API_URL || "https://sim-phong-thuy-backend-production.up.railway.app";
     const res = await fetch(`${base}/api/blog/${params.slug}`, { cache: "no-store" });
     const data = await res.json();
     const post = data?.data;

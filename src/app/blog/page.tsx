@@ -8,7 +8,7 @@ export const metadata = {
 
 async function getPosts() {
     try {
-        const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3009";
+        const base = process.env.NEXT_PUBLIC_API_URL || "https://sim-phong-thuy-backend-production.up.railway.app";
         const response = await fetch(base + "/api/blog", {
             cache: 'no-store' // hoặc có thể dùng revalidate: 60 cho cache
         });

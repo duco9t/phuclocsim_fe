@@ -13,7 +13,7 @@ export default function FeedbackList({ user, reloadFlag }: Props) {
     const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
 
     useEffect(() => {
-        fetch(`http://localhost:3009/api/feedback/get-details/${user._id}`)
+        fetch(`https://sim-phong-thuy-backend-production.up.railway.app/api/feedback/get-details/${user._id}`)
             .then((res) => res.json())
             .then((data) => {
                 if (Array.isArray(data.data)) {
