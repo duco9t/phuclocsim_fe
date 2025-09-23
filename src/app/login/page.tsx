@@ -51,23 +51,27 @@ export default function LoginPage() {
             });
 
             const data = await res.json();
+            console.log("Login API response:", data); // Debug log
 
             if (res.ok && (data.success || data.status === "OK")) {
-                const user = data.data;
-                login({
-                    _id: user._id,
-                    name: user.name,
-                    email: user.email,
-                });
+                // ✅ ĐÚNG: Lấy user từ data.data.user (không phải data.data)
+                const userObject = data.data.user;
+                console.log("User object:", userObject); // Debug log
+
+                // Lưu toàn bộ user object (không chỉ 3 fields)
+                login(userObject);
+
+                // Lưu tokens riêng
+                localStorage.setItem('accessToken', data.data.accessToken);
+                localStorage.setItem('refreshToken', data.data.refreshToken);
 
                 router.push("/account");
             } else {
-                // ❌ luôn báo chung chung
-                setError("Sai email hoặc mật khẩu");
+                setError(data.message || "Sai email hoặc mật khẩu");
             }
-        } catch {
-            // ❌ lỗi mạng/server cũng báo giống nhau
-            setError("Sai email hoặc mật khẩu");
+        } catch (error) {
+            console.error("Login error:", error);
+            setError("Lỗi kết nối, vui lòng thử lại");
         } finally {
             setLoading(false);
         }
