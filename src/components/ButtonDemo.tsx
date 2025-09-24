@@ -1,7 +1,13 @@
-import { Button3 } from "@/components/ui/button"
+"use client"
+
 import { Globe } from "@/components/magicui/globe"
+import { Button3 } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+
 
 export function ButtonDemo() {
+  const router = useRouter()
+
   return (
     <div className="relative w-full flex flex-col sm:flex-row gap-6 justify-center items-center">
       {/* Globe bên trái */}
@@ -11,10 +17,14 @@ export function ButtonDemo() {
 
       {/* CTA buttons bên phải */}
       <div className="flex flex-col sm:flex-row gap-4 my-10">
-        <Button3 className="px-6 py-3 rounded-xl text-lg font-bold text-white bg-black hover:bg-yellow-500 hover:text-black shadow-md hover:shadow-lg transition">
+        <Button3 className="px-6 py-3 rounded-xl text-lg font-bold text-white bg-black hover:bg-yellow-500 hover:text-black shadow-md hover:shadow-lg transition"
+          onClick={() => router.push("/sim-form")}
+        >
           Luận sim ngay
         </Button3>
-        <Button3 className="px-6 py-3 rounded-xl text-lg font-bold text-white bg-black hover:bg-yellow-500 hover:text-black shadow-md hover:shadow-lg transition">
+        <Button3 className="px-6 py-3 rounded-xl text-lg font-bold text-white bg-black hover:bg-yellow-500 hover:text-black shadow-md hover:shadow-lg transition"
+          onClick={() => router.push("/sim-form")}
+        >
           Đặt lịch tư vấn
         </Button3>
       </div>

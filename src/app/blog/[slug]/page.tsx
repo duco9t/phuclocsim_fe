@@ -40,7 +40,12 @@ export default async function PostPage({ params }: { params: { slug: string } })
             )}
 
             {/* Content (HTML) */}
-            <article className="prose max-w-none dark:prose-invert mb-8" dangerouslySetInnerHTML={{ __html: post.content || "" }} />
+            <article
+                className="prose max-w-none dark:prose-invert mb-8
+             [&_ul]:list-disc [&_ul]:pl-6
+             [&_ol]:list-decimal [&_ol]:pl-6"
+                dangerouslySetInnerHTML={{ __html: post.content || "" }}
+            />
 
             {/* Share buttons */}
             <div className="border-t border-[#d4af37]/30 pt-6">
